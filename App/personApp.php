@@ -87,7 +87,6 @@ HTML;
 class Person {
 	private $person=NULL;
 	private $name=NULL;
-	private $rate=NULL;
 	
 	/**
 	 * Database Handle
