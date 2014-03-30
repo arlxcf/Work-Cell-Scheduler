@@ -3,29 +3,29 @@
 namespace WCS;
 require_once 'Work-Cell-Scheduler/Config/global.php';
 
-class PersonApp {
-	private $person=NULL;
+class WorkerApp {
+	private $worker=NULL;
 	
-	function add(Person $person){
-		$this->person=$person;
+	function add(Worker $worker){
+		$this->worker=$worker;
 		return TRUE;
 	}
 
-	function process($page){
+	function process2($page){
 		$this->load();
 		$this->save();
 		echo $this->edit($page);
 	}
 	
 	function get(){
-		if($this->person===NULL){
-			$this->person=new Person();
+		if($this->worker===NULL){
+			$this->worker=new Worker();
 		}
-		if(!$this->person->setPerson($_REQUEST['person'])){
+		if(!$this->worker->setWorker($_REQUEST['worker'])){
 			//print ":PersonApp.process: unable to set person |".$_REQUEST['person']."|");
 			return FALSE;
 		}
-		if(isset($_REQUEST['name']) and !$this->person->setName($_REQUEST['name'])){
+		if(isset($_REQUEST['name']) and !$this->worker->setName($_REQUEST['name'])){
 			//print ":PersonApp.process: unable to set person |".$_REQUEST['name']."|");
 			return FALSE;
 		}
@@ -39,15 +39,15 @@ class PersonApp {
 			return FALSE;
 		}
 		$this->get();
-		if($this->person->read()===FALSE){
+		if($this->worker->read()===FALSE){
 			return FALSE;
 		}
 		return TRUE;
 	}
 	
 	function save(){
-		if($this->person===NULL){
-			$this->person=new Person();
+		if($this->worker===NULL){
+			$this->worker=new Worker();
 		}
 		if(!isset($_REQUEST['action'])){
 			return FALSE;
@@ -56,24 +56,24 @@ class PersonApp {
 			return FALSE;
 		}
 		$this->get();
-		if($this->person->delete()===FALSE){
-			print ":PersonApp.save: unable to delete()";
+		if($this->worker->delete()===FALSE){
+			print ":WorkerApp.save: unable to delete()";
 			return FALSE;
 		}
-		if($this->person->write()===FALSE){
-			print ":PersonApp.save: unable to write()";
+		if($this->worker->write()===FALSE){
+			print ":WorkerApp.save: unable to write()";
 			return FALSE;
 		}
 		return TRUE;
 	}
 	
 	function edit($action){
-		$person=htmlspecialchars($this->person->getPerson());
-		$name=htmlspecialchars($this->person->getName());
+		$worker=htmlspecialchars($this->worker->getWorker());
+		$name=htmlspecialchars($this->worker->getName());
 		return <<<HTML
 		<form action="$action" method="GET">
 		<table border="1">
-		  <tr><td>Person</td><td><input type="text" name="person" value="$person"></td></tr>
+		  <tr><td>Worker</td><td><input type="text" name="worker" value="$worker"></td></tr>
     	  <tr><td>Name</td>  <td><input type="text" name="name"   value="$name"></td></tr>
     	</table>
 		<input type="submit" name="action" value="Update">
@@ -84,8 +84,8 @@ HTML;
 }
 
 
-class Person {
-	private $person=NULL;
+class Worker {
+	private $worker=NULL;
 	private $name=NULL;
 	
 	/**
@@ -105,7 +105,7 @@ class Person {
 	}
 	
 	function display(){
-		$str="{person: $this->person";
+		$str="{worker: $this->worker";
 		if(!is_null($this->name)){
 			$str.=" name: $this->name";
 		}
@@ -113,22 +113,22 @@ class Person {
 	}
 	
 	/**
-	 * Set person
-	 * @param string $person Alphanumeric username [a-zA-Z0-9]
+	 * Set worker
+	 * @param string $worker Alphanumeric username [a-zA-Z0-9]
 	 * @return bool person set.
 	 */
-	function setPerson($person){
+	function setWorker($worker){
 		//print ":Person.setPerson: |$person|".gettype($person);
-		if(preg_match('/^[a-zA-Z0-9]+$/',$person)){
-			$this->person=$person;
+		if(preg_match('/^[a-zA-Z0-9]+$/',$worker)){
+			$this->worker=$worker;
 			return TRUE;
 		}
 		return FALSE;
 	}
 	
 	/**
-	 * Set Person name
-	 * @param string $name of person.
+	 * Set Worker name
+	 * @param string $name of Worker.
 	 */
 	function setName($name){
 		if(preg_match('/^\s*$/',$name)){
@@ -142,18 +142,18 @@ class Person {
 		return $this->name;
 	}
 	
-	function getPerson(){
-		return $this->person;
+	function getWorker(){
+		return $this->worker;
 	}
 	
 	function write(){
-		$stmt=self::$db->prepare("INSERT INTO Person (person,name) VALUES (?,?)");
+		$stmt=self::$db->prepare("INSERT INTO Worker (worker,name) VALUES (?,?)");
 		if($stmt===FALSE){
-			die("Person.write: unable to create statement " . self::$db->error);
+			die("Worker.write: unable to create statement " . self::$db->error);
 			return FALSE;
 		}
-		if($stmt->bind_param("ss",$this->person,$this->name)===FALSE){
-			die("Person.write: unable to bind " . self::$db->error);
+		if($stmt->bind_param("ss",$this->worker,$this->name)===FALSE){
+			die("Worker.write: unable to bind " . self::$db->error);
 		}
 		if($stmt->execute()===FALSE){
 			if($stmt->errno==1062){ // Duplicate Entry
@@ -161,7 +161,7 @@ class Person {
 				self::$db->close();
 				return FALSE;
 			}
-			die("Person.write: unable to execute self::$db->errno self::$db->error");
+			die("Worker.write: unable to execute self::$db->errno self::$db->error");
 			return FALSE;
 		}
 		$stmt->close();
@@ -169,42 +169,42 @@ class Person {
 	}
 	
 	/**
-	 * Remove Person
+	 * Remove Worker
 	 * @return bool TRUE on success (even if record did not exist);
 	 */
 	function delete(){
-		$stmt=self::$db->prepare("DELETE FROM Person WHERE person=?");
+		$stmt=self::$db->prepare("DELETE FROM Worker WHERE worker=?");
 		if($stmt===FALSE){
-			die("WCS/Person.delete> stmt:".self::$db->error);
+			die("WCS/Worker.delete> stmt:".self::$db->error);
 			return FALSE;
 		}
-		if($stmt->bind_param('s',$this->person)===FALSE){
-			die("WCS/Person.delete> bind_param:".self::$db->error);
+		if($stmt->bind_param('s',$this->worker)===FALSE){
+			die("WCS/Worker.delete> bind_param:".self::$db->error);
 			return FALSE;
 		}
 		if($stmt->execute()===FALSE){
-			die("WCS/Person.delete> execute:".self::$db->errno." ".self::$db->error);
+			die("WCS/Worker.delete> execute:".self::$db->errno." ".self::$db->error);
 			return FALSE;
 		}
 		return TRUE;
 	}
 	
 	function read() {
-		$stmt=self::$db->prepare("SELECT name,rate FROM Person WHERE person=?");
+		$stmt=self::$db->prepare("SELECT name FROM Worker WHERE worker=?");
 		if($stmt===FALSE){
-			die("Person.get: unable to create statement " . self::$db->error);
+			die("Worker.get: unable to create statement " . self::$db->error);
 			return FALSE;
 		}
-		if($stmt->bind_param("s",$this->person)===FALSE){
-			die("Person.get: unable to bind_param " . self::$db->error);
+		if($stmt->bind_param("s",$this->worker)===FALSE){
+			die("Worker.get: unable to bind_param " . self::$db->error);
 			return FALSE;
 		}
-		if($stmt->bind_result($this->name,$this->rate)===FALSE){
-			die("Person.get: unable to bind_result " . self::$db->error);
+		if($stmt->bind_result($this->name)===FALSE){
+			die("Worker.get: unable to bind_result " . self::$db->error);
 			return FALSE;
 		}
 		if($stmt->execute()===FALSE){
-			die("Person.get: unable to execute self::$db->errno self::$db->error");
+			die("Worker.get: unable to execute self::$db->errno self::$db->error");
 			return FALSE;
 		}
 		if($stmt->fetch()==FALSE){

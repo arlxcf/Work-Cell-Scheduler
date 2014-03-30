@@ -18,13 +18,15 @@ CREATE TABLE TrainingMatrix (
   training double,
   PRIMARY KEY (worker,subcell,training)
 );
-
-INSERT INTO TrainingMatrix (worker,subcell,training) VALUES 
-	('Dr.Middelkoop',1000,0.19),
-	('Dr.Middelkoop',1010,0.32),
-	('JD',1020,0.98),
-	('JD',1030,0.12);
+-- Initialize Matrix
+	INSERT INTO TrainingMatrix (worker,subcell,training)
+	VALUES ('ZZZZ','9999','0'),
+	('AndrewL','1000','0.97'),
+	('Ben','1010','0.98'),
+	('Cam','1020','0.90'),
+	('Dan','1030','0.94');
+	
+	
+	
 
 	
--- SELECT * FROM TrainingMatrix;
--- SELECT person,cell,w
